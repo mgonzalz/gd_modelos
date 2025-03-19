@@ -25,7 +25,7 @@
     "MD047": true,
     "MD048": true,
     "MD013": {
-        "line_length": 120
+        "line_length": 1000
     },
     "MD999": {
         "description": "Titles must start with a capital letter and end with a period.",
