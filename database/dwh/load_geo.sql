@@ -1,0 +1,17 @@
+-- COMPROBACIÓN DE DIMENSIÓN: SELECT COUNT(*) AS Num_Tiendas FROM DATAEX.[011_tienda];
+/*TIPO DE DATOS:
+SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME IN ('011_tienda', '012_provincia', '013_zona')
+AND TABLE_SCHEMA = 'DATAEX';
+*/
+-- CONSTRUCCIÓN GEO DIMENSION:
+SELECT
+    t.TIENDA_ID,        -- PK Tienda ID (011_tienda).
+    t.TIENDA_DESC,
+    p.PROV_DESC,
+    z.ZONA
+
+FROM DATAEX.[011_tienda] t
+LEFT JOIN DATAEX.[012_provincia] p ON t.PROVINCIA_ID = p.PROVINCIA_ID  -- Join con Provincia (*:1).
+LEFT JOIN DATAEX.[013_zona] z ON t.ZONA_ID = z.ZONA_ID                 -- Join con Zona (*:1).
