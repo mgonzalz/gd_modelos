@@ -55,7 +55,7 @@ SELECT
 
     -- Edad del Coche.
     edad_coche.Car_Age,
-
+    revisions.DIAS_DESDE_ULTIMA_REVISION,
     -- Enriquecimiento: Producto y Costes.
         -- Margen Bruto: Calcula el margen bruto de la venta antes de costes adicionales. Sirve para evaluar la rentabilidad básica del producto.
     ROUND(sales.PVP * (costes.Margen) * 0.01 * (1 - sales.IMPUESTOS / 100), 2) AS Margen_Eur_bruto,
@@ -70,8 +70,38 @@ SELECT
     sales.COSTE_VENTA_NO_IMPUESTOS + (costes.Margendistribuidor * 0.01 + costes.GastosMarketing * 0.01 - costes.Comisión_Marca * 0.01) * sales.PVP * (1 - sales.IMPUESTOS / 100)
     + costes.Costetransporte AS Coste_Total_Venta,
 
+        -- Comisión Total: Calcula la comisión total pagada a la marca por la venta. Sirve para evaluar el coste de distribución y marketing.
+    ROUND(
+    (ROUND(sales.PVP * (costes.Margen) * 0.01 * (1 - sales.IMPUESTOS / 100), 2) -- Margen bruto
+        - sales.COSTE_VENTA_NO_IMPUESTOS
+        - (costes.Margendistribuidor * 0.01 + costes.GastosMarketing * 0.01 - costes.Comisión_Marca * 0.01) * sales.PVP * (1 - sales.IMPUESTOS / 100)
+        - costes.Costetransporte) * (costes.Comisión_Marca * 0.01),2) AS ComisionTotal,
+
+        -- Margen Bruto Por Kw: Calcula el margen neto por kilowatt (Kw) de la venta. Sirve para evaluar el potencial de m
+    CASE WHEN producto.Kw > 0 THEN ROUND(sales.PVP * (costes.Margen) * 0.01 * (1 - sales.IMPUESTOS / 100), 2) / producto.Kw ELSE 0 END AS MargenPorKw,
+
         -- Tasa de Quejas: Indica si la venta generó una queja (1) o no (0). Sirve para identificar problemas de calidad o satisfacción del cliente.
-    CASE WHEN cac.QUEJA IS NOT NULL THEN 1 ELSE 0 END AS Tasa_Quejas_Venta
+    CASE WHEN cac.QUEJA IS NOT NULL THEN 1 ELSE 0 END AS Tasa_Quejas_Venta,
+
+        -- Tasa de Churn: Indica si la venta ha sido cancelada en los últimos 400 días (1) o no (0).
+    CASE
+            -- Caso 1: Revisión reciente (1-400 días) - No churn.
+    WHEN TRY_CAST(REPLACE(revisions.DIAS_DESDE_ULTIMA_REVISION, '.', '') AS INT) BETWEEN 1 AND 400 THEN 0
+            -- Caso 2: Revisión muy antigua (>400 días) - Churn.
+    WHEN TRY_CAST(REPLACE(revisions.DIAS_DESDE_ULTIMA_REVISION, '.', '') AS INT) > 400 THEN 1
+            -- Caso 3: Cuando es 0 (incluye NULLs convertidos a 0).
+    WHEN TRY_CAST(REPLACE(revisions.DIAS_DESDE_ULTIMA_REVISION, '.', '') AS INT) = 0 THEN
+        CASE
+                -- Subcaso 3.1: Coche nuevo (≤1 años) - No churn.
+            WHEN edad_coche.Car_Age <= 1 THEN 0
+                -- Subcaso 3.2: Coche viejo (>1 años) - Churn.
+            WHEN edad_coche.Car_Age > 1 THEN 1
+                -- Subcaso 3.3: Sin info de edad (nulo) - Churn (precaución): 2% de datos.
+            ELSE 1
+        END
+            -- Caso 4: Cualquier otro caso no contemplado - Churn.
+    ELSE 1
+END AS Churn
 
 FROM [DATAEX].[001_sales] sales
 LEFT JOIN [DATAEX].[004_rev] revisions ON sales.CODE = revisions.CODE -- Join con Revisiones (1:1).
