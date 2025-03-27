@@ -25,7 +25,10 @@ SELECT
 
     -- Revisiones.
     CONVERT(DATE, revisions.DATE_UTIMA_REV, 103) AS DATE_ULTIMA_REVISION,
-    CAST(REPLACE(revisions.DIAS_DESDE_ULTIMA_REVISION, '.', '') AS INT) AS DIAS_DESDE_ULTIMA_REVISION,
+    CASE
+        WHEN revisions.DIAS_DESDE_ULTIMA_REVISION IS NULL OR revisions.DIAS_DESDE_ULTIMA_REVISION = '' THEN NULL
+        ELSE CAST(REPLACE(revisions.DIAS_DESDE_ULTIMA_REVISION, '.', '') AS INT)
+    END AS DIAS_DESDE_ULTIMA_REVISION,
     revisions.Km_medio_por_revision,
     revisions.km_ultima_revision,
     revisions.Revisiones,
@@ -55,7 +58,7 @@ SELECT
 
     -- Edad del Coche.
     edad_coche.Car_Age,
-    revisions.DIAS_DESDE_ULTIMA_REVISION,
+
     -- Enriquecimiento: Producto y Costes.
         -- Margen Bruto: Calcula el margen bruto de la venta antes de costes adicionales. Sirve para evaluar la rentabilidad básica del producto.
     ROUND(sales.PVP * (costes.Margen) * 0.01 * (1 - sales.IMPUESTOS / 100), 2) AS Margen_Eur_bruto,
@@ -85,23 +88,33 @@ SELECT
 
         -- Tasa de Churn: Indica si la venta ha sido cancelada en los últimos 400 días (1) o no (0).
     CASE
-            -- Caso 1: Revisión reciente (1-400 días) - No churn.
-    WHEN TRY_CAST(REPLACE(revisions.DIAS_DESDE_ULTIMA_REVISION, '.', '') AS INT) BETWEEN 1 AND 400 THEN 0
+            -- Caso 1: Revisión reciente o sin revisión (0-400 días) - No churn.
+        WHEN
+            revisions.DIAS_DESDE_ULTIMA_REVISION IS NOT NULL AND
+            revisions.DIAS_DESDE_ULTIMA_REVISION <> '' AND
+            TRY_CAST(REPLACE(revisions.DIAS_DESDE_ULTIMA_REVISION, '.', '') AS INT) BETWEEN 0 AND 400
+        THEN 0
             -- Caso 2: Revisión muy antigua (>400 días) - Churn.
-    WHEN TRY_CAST(REPLACE(revisions.DIAS_DESDE_ULTIMA_REVISION, '.', '') AS INT) > 400 THEN 1
-            -- Caso 3: Cuando es 0 (incluye NULLs convertidos a 0).
-    WHEN TRY_CAST(REPLACE(revisions.DIAS_DESDE_ULTIMA_REVISION, '.', '') AS INT) = 0 THEN
-        CASE
+        WHEN
+            revisions.DIAS_DESDE_ULTIMA_REVISION IS NOT NULL AND
+            revisions.DIAS_DESDE_ULTIMA_REVISION <> '' AND
+            TRY_CAST(REPLACE(revisions.DIAS_DESDE_ULTIMA_REVISION, '.', '') AS INT) > 400
+        THEN 1
+            -- Caso 3: Valor nulo o vacío - decidir según la edad del coche.
+        WHEN revisions.DIAS_DESDE_ULTIMA_REVISION IS NULL
+            OR revisions.DIAS_DESDE_ULTIMA_REVISION = ''
+        THEN
+            CASE
                 -- Subcaso 3.1: Coche nuevo (≤1 años) - No churn.
-            WHEN edad_coche.Car_Age <= 1 THEN 0
+                WHEN edad_coche.Car_Age <= 1 THEN 0
                 -- Subcaso 3.2: Coche viejo (>1 años) - Churn.
-            WHEN edad_coche.Car_Age > 1 THEN 1
-                -- Subcaso 3.3: Sin info de edad (nulo) - Churn (precaución): 2% de datos.
-            ELSE 1
-        END
-            -- Caso 4: Cualquier otro caso no contemplado - Churn.
-    ELSE 1
-END AS Churn
+                WHEN edad_coche.Car_Age > 1 THEN 1
+                -- Subcaso 3.3: Sin info de edad (nulo) - Churn por defecto: 2% de datos.
+                ELSE 1
+            END
+            -- Caso 4: Otros valores inesperados - Churn por precaución.
+        ELSE 1
+    END AS Churn
 
 FROM [DATAEX].[001_sales] sales
 LEFT JOIN [DATAEX].[004_rev] revisions ON sales.CODE = revisions.CODE -- Join con Revisiones (1:1).
