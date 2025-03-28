@@ -1,3 +1,6 @@
+IF OBJECT_ID('client_insights', 'U') IS NOT NULL
+    DROP TABLE client_insights;
+
 -- Declaración de Variables.
 DECLARE
     -- Tasa de descuento para cálculos financieros.
@@ -97,7 +100,30 @@ SELECT
         -- RETENCIÓN DESDE EL CTE
     r.retencion_estimado,
 
-    -- CLTV (Customer Lifetime Value): Valor del cliente a lo largo de 5 años.
+    -- CLTV (Customer Lifetime Value).
+        -- CLTV (Customer Lifetime Value): Valor del cliente a lo largo de 1 años.
+    AVG(f.Margen_Eur) * (
+        POWER(r.retencion_estimado, 1) / POWER(1 + @discount_rate, 1)
+    ) AS CLTV_1_anio,
+        -- CLTV (Customer Lifetime Value): Valor del cliente a lo largo de 2 años.
+    AVG(f.Margen_Eur) * (
+        POWER(r.retencion_estimado, 1) / POWER(1 + @discount_rate, 1) +
+        POWER(r.retencion_estimado, 2) / POWER(1 + @discount_rate, 2)
+    ) AS CLTV_2_anios,
+        -- CLTV (Customer Lifetime Value): Valor del cliente a lo largo de 3 años.
+    AVG(f.Margen_Eur) * (
+        POWER(r.retencion_estimado, 1) / POWER(1 + @discount_rate, 1) +
+        POWER(r.retencion_estimado, 2) / POWER(1 + @discount_rate, 2) +
+        POWER(r.retencion_estimado, 3) / POWER(1 + @discount_rate, 3)
+    ) AS CLTV_3_anios,
+        -- CLTV (Customer Lifetime Value): Valor del cliente a lo largo de 4 años.
+    AVG(f.Margen_Eur) * (
+        POWER(r.retencion_estimado, 1) / POWER(1 + @discount_rate, 1) +
+        POWER(r.retencion_estimado, 2) / POWER(1 + @discount_rate, 2) +
+        POWER(r.retencion_estimado, 3) / POWER(1 + @discount_rate, 3) +
+        POWER(r.retencion_estimado, 4) / POWER(1 + @discount_rate, 4)
+    ) AS CLTV_4_anios,
+        -- CLTV (Customer Lifetime Value): Valor del cliente a lo largo de 5 años.
     AVG(f.Margen_Eur) * (
         POWER(r.retencion_estimado, 1) / POWER(1 + @discount_rate, 1) +
         POWER(r.retencion_estimado, 2) / POWER(1 + @discount_rate, 2) +
@@ -106,6 +132,7 @@ SELECT
         POWER(r.retencion_estimado, 5) / POWER(1 + @discount_rate, 5)
     ) AS CLTV_5_anios
 
+INTO client_insights  -- Creación tabla de salida en local.
 FROM dim_client c
 LEFT JOIN fact_sales f ON c.Customer_ID = f.Customer_ID
 LEFT JOIN retencion_cte r ON c.Customer_ID = r.Customer_ID
@@ -123,3 +150,6 @@ GROUP BY
     c.lon,
     c.Max_Mosaic_G,
     r.retencion_estimado;
+
+-- Resultados: Mostrar los registros de la tabla generada.
+SELECT * FROM client_insights;
