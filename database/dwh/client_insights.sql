@@ -47,6 +47,9 @@ SELECT
     c.GENERO,
     c.STATUS_SOCIAL,
     c.RENTA_MEDIA_ESTIMADA,
+    c.ENCUESTA_ZONA_CLIENTE_VENTA,
+    c.ENCUESTA_CLIENTE_ZONA_TALLER,
+    SUM(CASE WHEN f.QUEJA = 'SI' THEN 1 ELSE 0 END) AS total_quejas,
 
     -- Datos Demográficos.
     c.CODIGO_POSTAL,
@@ -58,22 +61,25 @@ SELECT
 
     -- Métricas de Ventas: KPIs de compras históricas.
     COUNT(DISTINCT f.CODE) AS numventas,
-    COUNT(DISTINCT f.Id_Producto) AS numero_coches,
     AVG(f.PVP) AS pvp_medio,
     AVG(f.COSTE_VENTA_NO_IMPUESTOS) AS coste_medio_sin_impuestos,
     AVG(CASE
         WHEN f.COSTE_VENTA_NO_IMPUESTOS > 0
         THEN 100 * (f.COSTE_VENTA_NO_IMPUESTOS - f.PVP) / f.COSTE_VENTA_NO_IMPUESTOS
-        ELSE NULL
+        ELSE 0
     END) AS descuento_medio,
 
     -- Postventa: Métricas de fidelización y uso del servicio.
     AVG(f.Revisiones) AS avg_revisiones,
     CASE
         WHEN AVG(f.Revisiones) > 0 THEN c.Edad / NULLIF(AVG(f.Revisiones), 0)
-        ELSE NULL
+        ELSE 0
     END AS ratio_edad_rev,
     AVG(f.km_ultima_revision) AS km_rev,
+    MAX(f.km_ultima_revision) AS km_rev_max,
+    MAX(f.DIAS_DESDE_ULTIMA_REVISION) AS dias_ultima_rev_max,
+    AVG(f.DIAS_EN_TALLER) AS avg_dias_taller,
+    AVG(CASE WHEN f.EN_GARANTIA = 'SI' THEN 1 ELSE 0 END) AS ratio_en_garantia,
 
     -- Leads: Clientes potenciales.
     MAX(CASE WHEN f.Fue_Lead = 1 THEN 1 ELSE 0 END) AS lead_algunavez,
@@ -84,8 +90,14 @@ SELECT
     SUM(f.Margen_Eur) AS margen_total,
     AVG(f.Margen_Eur) AS margen_pu,
 
-    -- Edad Último Coche.
+    -- Información Coches.
     MAX(f.Car_Age) AS edad_ultimocoche,
+    AVG(Car_Age) AS edad_promedio_coches,
+    MAX(f.Id_Producto) AS max_coches,
+
+    -- Cálculo de PVP * Q (Ingresos Totales).
+    SUM(f.PVP) AS ingresos_totales,
+    SUM(f.PVP * (f.IMPUESTOS/100)) AS impuestos_totales,
 
     -- Fechas Clave.
     MIN(CONVERT(DATE, f.Sales_Date)) AS primera_compra,
@@ -93,6 +105,7 @@ SELECT
     DATEDIFF(DAY,
         MIN(CONVERT(DATE, f.Sales_Date)),
         MAX(CONVERT(DATE, f.Sales_Date))) AS dias_relacion,
+    AVG(DATEDIFF(DAY, f.Prod_date, f.Sales_Date)) AS avg_dias_produccion_venta,
 
     -- Modelo Predictivo: Probabilidad de Churn y Retención.
         -- CHURN.
@@ -136,7 +149,6 @@ INTO client_insights  -- Creación tabla de salida en local.
 FROM dim_client c
 LEFT JOIN fact_sales f ON c.Customer_ID = f.Customer_ID
 LEFT JOIN retencion_cte r ON c.Customer_ID = r.Customer_ID
-
 GROUP BY
     c.Customer_ID,
     c.Edad,
@@ -149,7 +161,11 @@ GROUP BY
     c.lat,
     c.lon,
     c.Max_Mosaic_G,
+    c.ENCUESTA_ZONA_CLIENTE_VENTA,
+    c.ENCUESTA_CLIENTE_ZONA_TALLER,
     r.retencion_estimado;
+ALTER TABLE client_insights
+ADD CONSTRAINT PK_client_insights PRIMARY KEY (Customer_ID);
 
 -- Resultados: Mostrar los registros de la tabla generada.
 SELECT * FROM client_insights;
