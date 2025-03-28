@@ -106,9 +106,9 @@ SELECT
         THEN
             CASE
                 -- Subcaso 3.1: Coche nuevo (≤1 años) - No churn.
-                WHEN edad_coche.Car_Age <= 1 THEN 0
+                WHEN edad_coche.Car_Age < 1 THEN 0
                 -- Subcaso 3.2: Coche viejo (>1 años) - Churn.
-                WHEN edad_coche.Car_Age > 1 THEN 1
+                WHEN edad_coche.Car_Age >= 1 THEN 1
                 -- Subcaso 3.3: Sin info de edad (nulo) - Churn por defecto: 2% de datos.
                 ELSE 1
             END
