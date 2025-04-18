@@ -1,0 +1,6 @@
+Cluster_PCA,Genero,Casado,Edad,Graduado,Experiencia_laboral,Gastoscore,Family_Size,Generacion,Ingresos_anuales_brutos,Digital_encuesta,Gasto_medio_mensual_cuota,Abandono,Dias_cliente,Profesion_Construcción,Profesion_Empresarial,Profesion_Funcionario,Profesion_Otros,Profesion_Servicios,Profesion_Técnico,Zona_Centro,Zona_Levante,Zona_Noreste,Zona_Noroeste,Zona_Norte,Zona_Periferia,Zona_Sur,Campaña__0,Campaña__1,Campaña__3,Campaña__4,Campaña__5
+0,0.93,0.56,0.73,0.96,0.6,0.35,0.96,1.34,0.53,1.01,0.72,0.99,1.0,1.78,0.71,1.41,1.21,0.63,1.4,1.05,1.01,1.01,0.97,1.02,1.01,0.97,1.0,0.8,1.05,1.11,0.95
+1,1.04,1.69,1.49,1.24,1.44,2.44,0.88,0.42,1.54,0.79,1.5,1.05,1.01,0.43,1.22,0.03,0.6,1.71,0.45,0.99,1.04,0.93,1.07,0.9,1.03,0.99,0.99,1.01,1.0,0.98,1.05
+2,0.91,1.02,1.12,1.28,1.39,0.25,0.58,0.77,1.42,0.92,1.27,0.98,1.0,1.0,0.56,0.21,1.27,1.34,1.01,1.01,0.98,1.02,0.97,1.09,0.96,0.99,0.99,1.91,0.83,0.77,1.05
+3,1.07,0.09,0.52,0.29,0.02,0.06,1.49,1.78,0.38,1.55,0.7,0.96,0.98,0.59,0.76,3.92,0.48,0.17,0.85,0.97,1.03,1.0,1.04,0.92,0.97,1.01,1.03,0.01,1.19,1.18,0.91
+4,1.14,1.65,1.1,0.96,1.36,2.31,1.42,0.82,1.0,0.87,0.72,1.02,1.0,0.78,2.07,0.18,1.15,0.96,1.11,0.94,0.94,1.04,0.99,1.01,1.03,1.05,1.0,0.76,1.01,1.06,1.02
