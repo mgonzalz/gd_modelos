@@ -1,0 +1,27 @@
+{
+    "0": {
+        "nombre_marketing": "Digital Starters",
+        "nombre_interno": "Jóvenes digitales de bajo ingreso",
+        "descripcion": "Clientes jóvenes, altamente digitalizados, con bajo poder adquisitivo. Profesiones técnicas o públicas. Ideales para campañas digitales de captación temprana."
+    },
+    "1": {
+        "nombre_marketing": "Golden Offline",
+        "nombre_interno": "Adultos tradicionales con alto ingreso",
+        "descripcion": "Clientes de mediana edad o mayores, con altos ingresos pero baja digitalización. Fieles, casados y estables. Perfectos para productos premium con asistencia tradicional."
+    },
+    "2": {
+        "nombre_marketing": "VIP Loyals",
+        "nombre_interno": "Clientes premium rentables",
+        "descripcion": "Clientes con alto poder adquisitivo, bajo abandono, alto gasto y fidelidad. Representan el core rentable del negocio, foco en retención y valor."
+    },
+    "3": {
+        "nombre_marketing": "Zoomer Families",
+        "nombre_interno": "Generación Z en hogares amplios",
+        "descripcion": "Clientes muy jóvenes, digitales y pertenecientes a familias numerosas. Responden bien a promociones online y experiencias gamificadas."
+    },
+    "4": {
+        "nombre_marketing": "Hybrid Households",
+        "nombre_interno": "Perfiles mixtos de consumo medio",
+        "descripcion": "Hogares de clase media con mezcla de perfiles. Ingreso y gasto medios, ideal para campañas familiares o productos versátiles de amplio alcance."
+    }
+}
