@@ -1,27 +1,27 @@
 {
     "0": {
         "nombre_marketing": "Digital Starters",
-        "nombre_interno": "Jóvenes digitales de bajo ingreso",
+        "nombre_conceptual": "Jóvenes digitales de bajo ingreso",
         "descripcion": "Clientes jóvenes, altamente digitalizados, con bajo poder adquisitivo. Profesiones técnicas o públicas. Ideales para campañas digitales de captación temprana."
     },
     "1": {
         "nombre_marketing": "Golden Offline",
-        "nombre_interno": "Adultos tradicionales con alto ingreso",
-        "descripcion": "Clientes de mediana edad o mayores, con altos ingresos pero baja digitalización. Fieles, casados y estables. Perfectos para productos premium con asistencia tradicional."
+        "nombre_conceptual": "Adultos tradicionales con alto ingreso",
+        "descripcion": "Adultos mayores o de mediana edad, ingresos elevados, casados, baja digitalización. Estables, ideales para productos premium y asistencia personalizada."
     },
     "2": {
         "nombre_marketing": "VIP Loyals",
-        "nombre_interno": "Clientes premium rentables",
-        "descripcion": "Clientes con alto poder adquisitivo, bajo abandono, alto gasto y fidelidad. Representan el core rentable del negocio, foco en retención y valor."
+        "nombre_conceptual": "Clientes premium rentables",
+        "descripcion": "Alta capacidad de gasto, bajo abandono, perfil profesional consolidado. Muy rentables, perfectos para estrategias de fidelización de valor."
     },
     "3": {
         "nombre_marketing": "Zoomer Families",
-        "nombre_interno": "Generación Z en hogares amplios",
-        "descripcion": "Clientes muy jóvenes, digitales y pertenecientes a familias numerosas. Responden bien a promociones online y experiencias gamificadas."
+        "nombre_conceptual": "Generación Z en hogares amplios",
+        "descripcion": "Clientes muy jóvenes, altamente digitales y con familias numerosas. Responden a promociones online, ideal para gamificación y campañas móviles."
     },
     "4": {
-        "nombre_marketing": "Hybrid Households",
-        "nombre_interno": "Perfiles mixtos de consumo medio",
-        "descripcion": "Hogares de clase media con mezcla de perfiles. Ingreso y gasto medios, ideal para campañas familiares o productos versátiles de amplio alcance."
+        "nombre_marketing": "Family Boosters",
+        "nombre_conceptual": "Hogares amplios de potencial contenido",
+        "descripcion": "Clientes ligeramente mayores, con familias numerosas y profesiones variadas. Aunque su gasto actual es moderado, el sistema los clasifica con alto potencial financiero. Baja interacción digital, pero muestran algo más de respuesta en campañas recientes. Ideales para propuestas prácticas o familiares, con una mirada a largo plazo."
     }
 }
